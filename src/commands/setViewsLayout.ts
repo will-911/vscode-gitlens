@@ -64,7 +64,11 @@ export class SetViewsLayoutCommand extends Command {
 							destinationId: 'workbench.view.extension.gitlens',
 						}));
 					}
-				} catch {}
+				} catch {
+					for (const view of [...viewsConfigKeys, ...additionalViews]) {
+						void (await executeCommand(`gitlens.views.${view}.resetViewLocation`));
+					}
+				}
 
 				break;
 			case ViewsLayout.SourceControl:

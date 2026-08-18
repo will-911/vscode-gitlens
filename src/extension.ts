@@ -132,6 +132,16 @@ export async function activate(context: ExtensionContext): Promise<GitLensApi | 
 				}
 			}, 60000);
 		}
+
+		// Cursor's Source Control host often swallows contributed views, and a GitLens
+		// activity-bar container with only a collapsed Home webview is treated as empty.
+		// Move views onto the GitLens sidebar once so the icon and trees actually show.
+		if (/cursor/i.test(env.appName) && !context.globalState.get(StorageKeys.CursorViewsLayoutMigrated)) {
+			void executeCommand(Commands.SetViewsLayout, { layout: 'gitlens' }).then(
+				() => context.globalState.update(StorageKeys.CursorViewsLayoutMigrated, true),
+				() => {},
+			);
+		}
 	});
 
 	// Signal that the container is now ready

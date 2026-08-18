@@ -78,6 +78,9 @@ export const enum StorageKeys {
 	Subscription = 'gitlens:premium:subscription', // Don't change this key name as its the stored subscription
 
 	Deprecated_Version = 'gitlensVersion',
+
+	/** Cursor hides empty GitLens / SCM-hosted views; migrate once to the GitLens activity bar. */
+	CursorViewsLayoutMigrated = 'gitlens:cursor:viewsLayoutMigrated',
 }
 
 export const enum SyncedStorageKeys {
