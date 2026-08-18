@@ -1235,6 +1235,7 @@ export class GitHubGitProvider implements GitProvider, Disposable {
 			ordering?: string | null;
 			ref?: string;
 			since?: string;
+			includeFileDetails?: boolean;
 		},
 	): Promise<GitLog | undefined> {
 		if (repoPath == null) return undefined;

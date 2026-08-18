@@ -259,6 +259,8 @@ export class GitLogParser {
 							field = fields.next();
 							file.originalPath = field.value;
 						}
+
+						files.push(file);
 					}
 				}
 
@@ -282,6 +284,7 @@ export class GitLogParser {
 		limit: number | undefined,
 		reverse: boolean,
 		range: Range | undefined,
+		includeFileDetails: boolean = true,
 	): GitLog | undefined {
 		if (!data) return undefined;
 
@@ -391,7 +394,7 @@ export class GitLogParser {
 					let hasFiles = true;
 					if (next.done || next.value === '</f>') {
 						// If this is a merge commit and there are no files returned, skip the commit and reduce our truncationCount to ensure accurate truncation detection
-						if ((entry.parentShas?.length ?? 0) > 1) {
+						if (includeFileDetails && (entry.parentShas?.length ?? 0) > 1) {
 							if (truncationCount) {
 								truncationCount--;
 							}

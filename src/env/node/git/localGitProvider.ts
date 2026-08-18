@@ -1492,7 +1492,9 @@ export class LocalGitProvider implements GitProvider, Disposable {
 
 	@log()
 	async getCommit(repoPath: string, ref: string): Promise<GitCommit | undefined> {
-		const log = await this.getLog(repoPath, { limit: 2, ref: ref });
+		// File details may be omitted from the normal commit list for performance,
+		// but callers of getCommit need the complete commit to resolve its files.
+		const log = await this.getLog(repoPath, { limit: 2, ref: ref, includeFileDetails: true });
 		if (log == null) return undefined;
 
 		return log.commits.get(ref) ?? first(log.commits.values());
@@ -2063,6 +2065,7 @@ export class LocalGitProvider implements GitProvider, Disposable {
 			ordering?: string | null;
 			ref?: string;
 			since?: string;
+			includeFileDetails?: boolean;
 		},
 	): Promise<GitLog | undefined> {
 		const cc = Logger.getCorrelationContext();
@@ -2073,7 +2076,8 @@ export class LocalGitProvider implements GitProvider, Disposable {
 			// const parser = GitLogParser.defaultParser;
 
 			// Official GitLens (17.1+): delayLoadingFileDetails skips expensive per-commit file lists.
-			const includeFileDetails = !this.container.config.advanced.commits?.delayLoadingFileDetails;
+			const includeFileDetails =
+				options?.includeFileDetails ?? !this.container.config.advanced.commits?.delayLoadingFileDetails;
 			const data = await this.git.log(repoPath, options?.ref, {
 				...options,
 				// args: parser.arguments,
@@ -2121,6 +2125,7 @@ export class LocalGitProvider implements GitProvider, Disposable {
 				limit,
 				false,
 				undefined,
+				includeFileDetails,
 			);
 
 			if (log != null) {

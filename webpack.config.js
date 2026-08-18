@@ -581,7 +581,8 @@ class InlineChunkHtmlPlugin {
  * @returns { string }
  */
 function resolveTSConfig(configFile) {
-	const result = spawnSync(`"${path.join(__dirname, 'node_modules', '.bin', 'tsc.cmd')}"`, ['-p', `"${configFile}"`, '--showConfig'], {
+	const tsc = process.platform === 'win32' ? 'tsc.cmd' : 'tsc';
+	const result = spawnSync(`"${path.join(__dirname, 'node_modules', '.bin', tsc)}"`, ['-p', `"${configFile}"`, '--showConfig'], {
 		cwd: __dirname,
 		encoding: 'utf8',
 		shell: true,

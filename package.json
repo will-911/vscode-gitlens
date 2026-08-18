@@ -2,7 +2,7 @@
 	"name": "gitlens",
 	"displayName": "%gitlens.displayName%",
 	"description": "%gitlens.description%",
-	"version": "12.2.0",
+	"version": "12.2.1",
 	"engines": {
 		"vscode": "^1.64.0"
 	},

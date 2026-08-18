@@ -280,6 +280,8 @@ export interface GitProvider extends Disposable {
 			ordering?: string | null | undefined;
 			ref?: string | undefined;
 			since?: string | undefined;
+			/** Whether to include changed-file details in each commit. */
+			includeFileDetails?: boolean | undefined;
 		},
 	): Promise<GitLog | undefined>;
 	getLogRefsOnly(

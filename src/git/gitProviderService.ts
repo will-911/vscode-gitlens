@@ -1321,6 +1321,7 @@ export class GitProviderService implements Disposable {
 			ordering?: string | null;
 			ref?: string;
 			since?: string;
+			includeFileDetails?: boolean;
 		},
 	): Promise<GitLog | undefined> {
 		const { provider, path } = this.getProvider(repoPath);

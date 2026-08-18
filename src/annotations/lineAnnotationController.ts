@@ -42,7 +42,9 @@ export class LineAnnotationController implements Disposable {
 	constructor(private readonly container: Container) {
 		this._disposable = Disposable.from(
 			once(container.onReady)(this.onReady, this),
-			configuration.onDidChange(this.onConfigurationChanged, this),
+			// Listen to all configuration changes so native VS Code Git blame decorations
+			// can be detected and kept separate from GitLens current-line annotations.
+			configuration.onDidChangeAny(this.onConfigurationChanged, this),
 			container.fileAnnotations.onDidToggleAnnotations(this.onFileAnnotationsToggled, this),
 			Authentication.onDidChange(() => void this.refresh(window.activeTextEditor)),
 		);
@@ -60,7 +62,8 @@ export class LineAnnotationController implements Disposable {
 	}
 
 	private onConfigurationChanged(e?: ConfigurationChangeEvent) {
-		if (!configuration.changed(e, 'currentLine')) return;
+		const nativeGitBlameChanged = e?.affectsConfiguration('git.blame.editorDecoration.enabled') ?? true;
+		if (!configuration.changed(e, 'currentLine') && !nativeGitBlameChanged) return;
 
 		if (configuration.changed(e, 'currentLine.enabled')) {
 			if (this.container.config.currentLine.enabled) {
@@ -204,6 +207,13 @@ export class LineAnnotationController implements Disposable {
 			this.clear(this._editor);
 
 			this._editor = editor;
+		}
+
+		// Recent VS Code versions can render their own current-line Git blame
+		// decoration. Do not render a second decoration at the same line end.
+		if (configuration.getAny<boolean>('git.blame.editorDecoration.enabled', null, false)) {
+			this.clear(editor);
+			return;
 		}
 
 		const cfg = this.container.config.currentLine;
